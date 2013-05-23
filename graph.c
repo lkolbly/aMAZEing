@@ -16,8 +16,92 @@ typedef struct grid_node_t {
   grid_leaf_t *grid;
 
   int is_leaf;
+
   int min_x, min_y, max_x, max_y;
+
+  // Because we're doing this paging system, we need a notion of whether
+  // or not this node is loaded. If this is 1, then it's loaded. If not,
+  // then it's not loaded. If it's not loaded, then the disk_cache will
+  // name the file that this node is saved in.
+  int is_loaded;
+  char *disk_cache;
 } grid_node_t;
+
+int cache_counter = 0;
+
+char *tempFileName(void)
+{
+  char *s = malloc(1024);
+  sprintf(s, "/tmp/maze%06i.cache", cache_counter++);
+  return s;
+}
+
+char *saveGridNode(grid_node_t *node)
+{
+  if (!node->disk_cache) {
+    // Generate a name for it
+    node->disk_cache = tempFileName();
+  }
+  FILE *f = fopen(node->disk_cache, "w");
+  printf("Writing to %s\n", node->disk_cache);
+  if (node->is_leaf) {
+    fprintf(f, "LEAF");
+    int i;
+    for (i=0; i<LEAF_WIDTH; i++) {
+      fwrite(&node->grid->nodes[i], LEAF_HEIGHT, 1, f);
+    }
+  } else {
+    // Now save some data about us
+    fprintf(f, "NODE");
+    fwrite(&node->min_x, 4, 1, f);
+    fwrite(&node->max_x, 4, 1, f);
+    fwrite(&node->min_y, 4, 1, f);
+    fwrite(&node->max_y, 4, 1, f);
+
+    // Save the children to their own file
+    int i;
+    for (i=0; i<4; i++) {
+      char *fname = saveGridNode(node->quads[i]);
+      int l = strlen(fname);
+      fwrite(&l, 4, 1, f);
+      fwrite(fname, l, 1, f);
+    }
+  }
+  fclose(f);
+
+  return node->disk_cache;
+}
+
+void freeGridNode(grid_node_t *node)
+{
+  if (!node->is_loaded) {
+    return;
+  }
+  if (node->is_leaf) {
+    int i;
+    for (i=0; i<LEAF_WIDTH; i++) {
+      free(node->grid->nodes[i]);
+    }
+    free(node->grid->nodes);
+    free(node->grid);
+  } else {
+    int i;
+    for (i=0; i<4; i++) {
+      freeGridNode(node->quads[i]);
+      free(node->quads[i]);
+    }
+  }
+}
+
+void unloadGridNode(grid_node_t *node)
+{
+  // First, we want to save it.
+  saveGridNode(node);
+
+  // Now we want to free its children.
+  freeGridNode(node);
+  node->is_loaded = 0;
+}
 
 grid_leaf_t *newGridLeaf(void)
 {
@@ -34,6 +118,8 @@ grid_leaf_t *newGridLeaf(void)
 grid_node_t *newGrid(int depth, int min_x, int min_y)
 {
   grid_node_t *root = malloc(sizeof(grid_node_t));
+  root->is_loaded = 1;
+  root->disk_cache = NULL;
   if (depth == 0) {
     root->is_leaf = 1;
     root->grid = newGridLeaf();
@@ -87,12 +173,15 @@ char *gridGetNodePtr(grid_node_t *root, int x, int y)
 
 int main(int argc, char **argv)
 {
-  grid_node_t *root = newGrid(2, 0,0);
+  grid_node_t *root = newGrid(3, 0,0);
   printf("%i %i %i %i\n", root->min_x, root->min_y, root->max_x, root->max_y);
   char *n = gridGetNodePtr(root, 1, 1);
   *n = 0xFF;
   n = gridGetNodePtr(root, 2, 2);
   *n = 0xFF;
+
+  // Unload it
+  unloadGridNode(root->quads[0]);
 
   return 0;
 }
