@@ -68,17 +68,29 @@ int main(int argc, char **argv)
   img->w = 1028;
   img->h = 1028;
   img->data = malloc(sizeof(char)*img->w*img->h*4);
+
+
   int i;
   int j;
-  for (i=0; i<img->w; i++)
+
+
+  i=0;
+  iGridMax=128;
+  j=0;
+  jGridMax=128;
+
+  for (i=0; i<iGridMax; i++)
     {
-      for(j=0; j<img->h; j++)
+      for (j=0; i<jGridMax; j++)
 	{
-	  img->data[4*img->w*j + 4*i + 0] = rand()%255;
-	  img->data[4*img->w*j + 4*i + 1] = rand()%255;
-	  img->data[4*img->w*j + 4*i + 2] = rand()%255;
-	  img->data[4*img->w*j + 4*i + 3] = 255;
+	  if(maze[i][j].data & (1<<0) == 1)
+	    {
+	      
+	    }
+	  if(maze[i][j].data & (1<<1) == 1)
+	    {
+	      
+	    }
 	}
     }
-  imagePNGWriteToFile("hi.png",img);
 }
