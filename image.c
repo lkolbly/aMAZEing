@@ -1,7 +1,8 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<png.h>
-#include "image.h" 
+#include "image.h"
+#include<math.h> 
 
 
 int imagePNGWriteToFile( char *filename, image_t *image )
@@ -75,19 +76,38 @@ int main(int argc, char **argv)
 
 
   i=0;
-  iGridMax=128;
+  iMazeMax=maze[0].size * 10;
   j=0;
-  jGridMax=128;
+  jMazeMax=maze.size * 10;
 
-  for (i=0; i<iGridMax; i++)
+  
+
+
+
+  for (i=0; i<iMazeMax; i++)
     {
-      for (j=0; i<jGridMax; j++)
+      for (j=0; j<jMazeMax; j++)
 	{
 	  if(maze[i][j].data & (1<<0) == 1)
 	    {
-	      
+	      int k;
+	      for(k=-5;k<=5;k++)
+		{
+		  img->data[i*10*4 + (floor(j*10*4/img->w)-5)*img->w + 0 + k*4] = 255;
+		  img->data[i*10*4 + (floor(j*10*4/img->w)-5)*img->w + 1 + k*4] = 255;
+		  img->data[i*10*4 + (floor(j*10*4/img->w)-5)*img->w + 2 + k*4] = 255;
+		  img->data[i*10*4 + (floor(j*10*4/img->w)-5)*img->w + 3 + k*4] = 255;
+		}
 	    }
 	  if(maze[i][j].data & (1<<1) == 1)
+	    {
+	      
+	    }
+	  if(maze[i][j].data & (1<<2) == 1)
+	    {
+	      
+	    }
+	  if(maze[i][j].data & (1<<3) == 1)
 	    {
 	      
 	    }
