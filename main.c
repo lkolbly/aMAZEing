@@ -104,7 +104,6 @@ cell_t **generate_maze(int w, int h)
 
 void write_file(const char *fname, cell_t **maze, int maze_w, int maze_h)
 {
-  printf("test");
   image_t *img = malloc(sizeof(image_t));
   img->w = maze_w*10;
   img->h = maze_h*10;
@@ -124,18 +123,18 @@ void write_file(const char *fname, cell_t **maze, int maze_w, int maze_h)
 
   
 
-  printf("hi");
-
   for (i=0; i<iMazeMax; i++)
     {
       for (j=0; j<jMazeMax; j++)
 	{
-	  if(maze[i][j].data & (1<<0) == 1)
+	  if(maze[i][j].data & (1<<0) == 1 && j>1)
 	    {
-	      int k;
+	      int k;y
 	      for(k=-5;k<=5;k++)
 		{
-		  printf(i*10*4 + (img->w*10*4 * j*10*4) + 0 + k*4);
+		  printf("%i\n",i);
+		  printf("%i\n",j);
+		  printf("%i\n",i*10*4 + (img->w*10*4 * j*10*4) + 0 + k*4);
 		  img->data[i*10*4 + (img->w*10*4 * j*10*4) + 0 + k*4] = 255;
 		  img->data[i*10*4 + (img->w*10*4 * j*10*4) + 1 + k*4] = 255;
 		  img->data[i*10*4 + (img->w*10*4 * j*10*4) + 2 + k*4] = 255;
