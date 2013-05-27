@@ -93,10 +93,10 @@ int main(int argc, char **argv)
 	      int k;
 	      for(k=-5;k<=5;k++)
 		{
-		  img->data[i*10*4 + (floor(j*10*4/img->w)-5)*img->w + 0 + k*4] = 255;
-		  img->data[i*10*4 + (floor(j*10*4/img->w)-5)*img->w + 1 + k*4] = 255;
-		  img->data[i*10*4 + (floor(j*10*4/img->w)-5)*img->w + 2 + k*4] = 255;
-		  img->data[i*10*4 + (floor(j*10*4/img->w)-5)*img->w + 3 + k*4] = 255;
+		  img->data[i*10*4 + (img->w*10*4 * j*10*4) + 0 + k*4] = 255;
+		  img->data[i*10*4 + (img->w*10*4 * j*10*4) + 1 + k*4] = 255;
+		  img->data[i*10*4 + (img->w*10*4 * j*10*4) + 2 + k*4] = 255;
+		  img->data[i*10*4 + (img->w*10*4 * j*10*4) + 3 + k*4] = 255;
 		}
 	    }
 	  if(maze[i][j].data & (1<<1) == 1)
