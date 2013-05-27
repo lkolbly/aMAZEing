@@ -28,7 +28,15 @@ void remove_wall(cell_t **maze, int w, int h)
     int y = randint(0,h);
     int dir = randint(0,4);
     if (!(maze[x][y].data&(1<<dir))) {
-      continue;
+      //continue;
+      // Try the other directions
+      int i;
+      for (i=0; i<4; i++) {
+	dir = (dir+1)%4;
+	if (maze[x][y].data&(1<<dir)) {
+	  break;
+	}
+      }
     }
 
     // Check to see if they're already in the same congruency class.
@@ -48,6 +56,7 @@ void remove_wall(cell_t **maze, int w, int h)
 
     // Remove the wall
     maze[x][y].data = ~((~maze[x][y].data)|(1<<dir));
+    maze[x2][y2].data = ~((~maze[x2][y2].data)|(1<<((dir+2)%4)));
 
     // Merge the trees
     cell_t *root1 = get_connectedness(&maze[x][y]);
@@ -57,6 +66,12 @@ void remove_wall(cell_t **maze, int w, int h)
     break;
   }
 }
+
+// Manage lists of removable walls
+typedef struct wall_t {
+  int x,y;
+  int dir;
+} wall_t;
 
 cell_t **generate_maze(int w, int h)
 {
@@ -72,14 +87,17 @@ cell_t **generate_maze(int w, int h)
   }
 
   // Alright, now let's go!
-  while (1) {
-    remove_wall(maze, w, h);
-  }
+  //for (i=0; i<w*h; i++) {
+    //remove_wall(maze, w, h);
+  //}
+
+  // Generate a list of walls that could be removed.
+  cell_t *removeable = malloc(sizeof(cell_t)*256);
 
   return maze;
 }
 
-void write_file(const char *fname, cell_t **maze)
+void write_file(const char *fname, cell_t **maze, int maze_w, int maze_h)
 {
 }
 
@@ -87,6 +105,6 @@ int main(int argc, char **argv)
 {
   // Generate a maze!
   cell_t **maze = generate_maze(256,256);
-  write_file("output.png", maze);
+  write_file("output.png", maze, 256, 256);
   return 0;
 }
