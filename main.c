@@ -97,7 +97,51 @@ cell_t **generate_maze(int w, int h)
   //}
 
   // Generate a list of walls that could be removed.
-  cell_t *removeable = malloc(sizeof(cell_t)*256);
+  wall_t *removeable = malloc(sizeof(wall_t)*w*h*4);
+  int j, cnt=0;
+  for (i=0; i<w; i++) {
+    for (j=0; j<h; j++) {
+      removeable[cnt].x = i;
+      removeable[cnt].y = j;
+      removeable[cnt].dir = cnt%4;
+      cnt++;
+    }
+  }
+
+  int nwalls = cnt;
+  printf("There are %i removeable walls.\n", nwalls);
+  while (nwalls > 0) {
+    int pick = randint(0,nwalls);
+    printf("%i\n", pick);
+
+    // Check to see if there's a path between the neighboring points.
+    int x = removeable[cnt].x;
+    int y = removeable[cnt].y;
+    int x2 = x;
+    int y2 = y;
+    switch (removeable[cnt].dir) {
+    case 0: y2++; break;
+    case 1: x2++; break;
+    case 2: y2--; break;
+    case 3: x2--; break;
+    default: break;
+    }
+
+    int dir = removeable[cnt].dir;
+    if (get_connectedness(&maze[x][y]) != get_connectedness(&maze[x2][y2])) {
+      // Remove the wall
+      maze[x][y].data = ~((~maze[x][y].data)|(1<<dir));
+      maze[x2][y2].data = ~((~maze[x2][y2].data)|(1<<((dir+2)%4)));
+
+      // Merge the trees
+      cell_t *root1 = get_connectedness(&maze[x][y]);
+      cell_t *root2 = get_connectedness(&maze[x2][y2]);
+      root1->parent = root2;
+    }
+
+    memmove(&removeable[pick], &removeable[pick+1], sizeof(wall_t)*(nwalls-pick-1));
+    nwalls--;
+  }
 
   return maze;
 }
