@@ -170,47 +170,32 @@ void write_file(const char *fname, cell_t **maze, int maze_w, int maze_h)
   j=0;
   jMazeMax=maze_h;
 
+  for (i=0; i<iMazeMax*jMazeMax*400;i++)
+    {
+      img->data[i] = 255;
+    }
   
 
   for (i=0; i<iMazeMax; i++)
     {
       for (j=0; j<jMazeMax; j++)
 	{
-	  if((maze[i][j].data & (1<<0)) == 1 && j>1)
+	  if((maze[i][j].data & (1<<0)) == 1) // && j>1)
 	    {
 	      int k;
-	      for(k=-5;k<=5;k++)
-		{
-		  printf("%i\n",i*10*4 + (img->w*10*4 * j*10*4) + 0 + k*4);
-		  img->data[i*10*4 + (img->w*10*4 + j*10*4) + 0 + k*4] = 255;
-		  img->data[i*10*4 + (img->w*10*4 + j*10*4) + 1 + k*4] = 255;
-		  img->data[i*10*4 + (img->w*10*4 + j*10*4) + 2 + k*4] = 255;
-		  img->data[i*10*4 + (img->w*10*4 + j*10*4) + 3 + k*4] = 255;
-		}
+	      // for(k=-5;k<=5;k++)
+	      //	{
+	      blacken(img,i,j);
+		  //	}
 	    }
 	  if((maze[i][j].data & (1<<1)) == 1)
 	    {
-	      int k;
-	      for(k=-5;k<=5;k++)
-		{
-		  // printf("%i\n",i*10*4 + (img->w*10*4 * j*10*4) + 0 + k*4);
-		  img->data[i*10*4 + (img->w*10*4 * j*10*4) + 0 + k*4] = 255;
-		  img->data[i*10*4 + (img->w*10*4 * j*10*4) + 1 + k*4] = 255;
-		  img->data[i*10*4 + (img->w*10*4 * j*10*4) + 2 + k*4] = 255;
-		  img->data[i*10*4 + (img->w*10*4 * j*10*4) + 3 + k*4] = 255;
-		}
+	      //blacken(img,i,j);
 	      
 	    }
 	  if((maze[i][j].data & (1<<2)) == 1)
 	    {
-	      int k;
-	      for(k=-5;k<=5;k++)
-		{
-		  img->data[i*10*4 + (img->w*10*4 - j*10*4) + 0 + k*4] = 255;
-		  img->data[i*10*4 + (img->w*10*4 - j*10*4) + 1 + k*4] = 255;
-		  img->data[i*10*4 + (img->w*10*4 - j*10*4) + 2 + k*4] = 255;
-		  img->data[i*10*4 + (img->w*10*4 - j*10*4) + 3 + k*4] = 255;
-		}
+	      // blacken(img,i,j);
 	      
 	    }
 	  if((maze[i][j].data & (1<<3)) == 1)
@@ -219,8 +204,16 @@ void write_file(const char *fname, cell_t **maze, int maze_w, int maze_h)
 	    }
 	}
     }
-
+  
   imagePNGWriteToFile(fname,img);
+}
+
+void blacken( image_t *img, int x, int y)
+{
+  img->data[x*10*4 + y*10*img->w*4 + 0]=0;
+  img->data[x*10*4 + y*10*img->w*4 + 1]=0;
+  img->data[x*10*4 + y*10*img->w*4 + 2]=0;
+  img->data[x*10*4 + y*10*img->w*4 + 3]=255;
 }
 
 int main(int argc, char **argv)
