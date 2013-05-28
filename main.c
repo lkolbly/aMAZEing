@@ -19,7 +19,7 @@ int randint(int min, int max)
 
 cell_t *get_connectedness(cell_t *cell)
 {
-  if (!cell) {
+  if (!cell->parent) {
     return cell;
   }
   return get_connectedness(cell->parent);
@@ -99,8 +99,8 @@ cell_t **generate_maze(int w, int h)
   // Generate a list of walls that could be removed.
   wall_t *removeable = malloc(sizeof(wall_t)*w*h*4);
   int j, cnt=0;
-  for (i=0; i<w; i++) {
-    for (j=0; j<h; j++) {
+  for (i=1; i<w-1; i++) {
+    for (j=1; j<h-1; j++) {
       removeable[cnt].x = i;
       removeable[cnt].y = j;
       removeable[cnt].dir = cnt%4;
@@ -113,18 +113,18 @@ cell_t **generate_maze(int w, int h)
   while (nwalls > 0) {
     int pick;
     if (nwalls > 2) {
-      pick = randint(0,nwalls);
+      pick = randint(0,nwalls-1);
     } else {
       pick = 0;
     }
-    printf("%i out of %i\n", pick, nwalls);
+    int x = removeable[pick].x;
+    int y = removeable[pick].y;
+    printf("%i out of %i (%i,%i,%i)\n", pick, nwalls, x, y, removeable[pick].dir);
 
     // Check to see if there's a path between the neighboring points.
-    int x = removeable[cnt].x;
-    int y = removeable[cnt].y;
     int x2 = x;
     int y2 = y;
-    switch (removeable[cnt].dir) {
+    switch (removeable[pick].dir) {
     case 0: y2++; break;
     case 1: x2++; break;
     case 2: y2--; break;
@@ -133,7 +133,8 @@ cell_t **generate_maze(int w, int h)
     }
 
     int dir = removeable[cnt].dir;
-    if (get_connectedness(&maze[x][y]) != get_connectedness(&maze[x2][y2])) {
+    printf("%p %p\n", get_connectedness(&maze[x][y]), get_connectedness(&maze[x2][y2]));
+    if (get_connectedness(&maze[x][y]) != get_connectedness(&maze[x2][y2]) || get_connectedness(&maze[x][y]) == NULL) {
       // Remove the wall
       maze[x][y].data = ~((~maze[x][y].data)|(1<<dir));
       maze[x2][y2].data = ~((~maze[x2][y2].data)|(1<<((dir+2)%4)));
@@ -219,8 +220,8 @@ void blacken( image_t *img, int x, int y)
 int main(int argc, char **argv)
 {
   // Generate a maze!
-  cell_t **maze = generate_maze(256,256);
-  write_file("output.png", maze, 256, 256);
+  cell_t **maze = generate_maze(25,25);
+  write_file("output.png", maze, 25, 25);
   return 0;
 }
 
