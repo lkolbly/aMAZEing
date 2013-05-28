@@ -98,14 +98,59 @@ cell_t **generate_maze(int w, int h)
 
   // Generate a list of walls that could be removed.
   wall_t *removeable = malloc(sizeof(wall_t)*w*h*4);
-  int j, cnt=0;
+  int j, k, cnt=0;
   for (i=1; i<w-1; i++) {
     for (j=1; j<h-1; j++) {
-      removeable[cnt].x = i;
-      removeable[cnt].y = j;
-      removeable[cnt].dir = cnt%4;
-      cnt++;
+      for (k=0; k<4; k++) {
+        removeable[cnt].x = i;
+        removeable[cnt].y = j;
+        removeable[cnt].dir = k;
+        cnt++;
+      }
     }
+  }
+  for (i=1; i<h-1; i++) {
+    removeable[cnt].x = 0;
+    removeable[cnt].y = i;
+    removeable[cnt].dir = 0;
+    cnt++;
+
+    removeable[cnt].x = 0;
+    removeable[cnt].y = i;
+    removeable[cnt].dir = 2;
+    cnt++;
+
+    removeable[cnt].x = w-1;
+    removeable[cnt].y = i;
+    removeable[cnt].dir = 0;
+    cnt++;
+
+    removeable[cnt].x = w-1;
+    removeable[cnt].y = i;
+    removeable[cnt].dir = 2;
+    cnt++;
+  }
+
+  for (i=1; i<w-1; i++) {
+    removeable[cnt].x = i;
+    removeable[cnt].y = 0;
+    removeable[cnt].dir = 1;
+    cnt++;
+
+    removeable[cnt].x = i;
+    removeable[cnt].y = 0;
+    removeable[cnt].dir = 3;
+    cnt++;
+
+    removeable[cnt].x = i;
+    removeable[cnt].y = h-1;
+    removeable[cnt].dir = 1;
+    cnt++;
+
+    removeable[cnt].x = i;
+    removeable[cnt].y = h-1;
+    removeable[cnt].dir = 3;
+    cnt++;
   }
 
   int nwalls = cnt;
@@ -113,7 +158,7 @@ cell_t **generate_maze(int w, int h)
   while (nwalls > 0) {
     int pick;
     if (nwalls > 2) {
-      pick = randint(0,nwalls-1);
+      pick = randint(0,nwalls);
     } else {
       pick = 0;
     }
@@ -132,7 +177,7 @@ cell_t **generate_maze(int w, int h)
     default: break;
     }
 
-    int dir = removeable[cnt].dir;
+    int dir = removeable[pick].dir;
     printf("%p %p\n", get_connectedness(&maze[x][y]), get_connectedness(&maze[x2][y2]));
     if (get_connectedness(&maze[x][y]) != get_connectedness(&maze[x2][y2]) || get_connectedness(&maze[x][y]) == NULL) {
       // Remove the wall
@@ -142,12 +187,23 @@ cell_t **generate_maze(int w, int h)
       // Merge the trees
       cell_t *root1 = get_connectedness(&maze[x][y]);
       cell_t *root2 = get_connectedness(&maze[x2][y2]);
-      root1->parent = root2;
+      root2->parent = root1;
+      printf("Connecting %i,%i to %i,%i (%p->parent = %p)\n", x,y,x2,y2, root2, root1);
+    } else {
+      printf("%i,%i and %i,%i are already connected through %p.\n", x,y, x2,y2, get_connectedness(&maze[x][y]));
     }
 
     memmove(&removeable[pick], &removeable[pick+1], sizeof(wall_t)*(nwalls-pick-1));
     nwalls--;
+//break;
   }
+
+for (i=0; i<w; i++) {
+for (j=0; j<h; j++) {
+//maze[i][j].data = ~maze[i][j].data;
+printf("%i,%i: %X\n", i,j, maze[i][j].data);
+}
+}
 
   return maze;
 }
@@ -254,6 +310,7 @@ void blackenLeft( image_t *img, int x, int y)
 
 int main(int argc, char **argv)
 {
+  srand(time(NULL));
   // Generate a maze!
   cell_t **maze = generate_maze(25,25);
   write_file("output.png", maze, 25, 25);
