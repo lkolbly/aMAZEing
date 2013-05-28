@@ -111,8 +111,13 @@ cell_t **generate_maze(int w, int h)
   int nwalls = cnt;
   printf("There are %i removeable walls.\n", nwalls);
   while (nwalls > 0) {
-    int pick = randint(0,nwalls);
-    printf("%i\n", pick);
+    int pick;
+    if (nwalls > 2) {
+      pick = randint(0,nwalls);
+    } else {
+      pick = 0;
+    }
+    printf("%i out of %i\n", pick, nwalls);
 
     // Check to see if there's a path between the neighboring points.
     int x = removeable[cnt].x;
@@ -171,7 +176,7 @@ void write_file(const char *fname, cell_t **maze, int maze_w, int maze_h)
     {
       for (j=0; j<jMazeMax; j++)
 	{
-	  if(maze[i][j].data & (1<<0) == 1 && j>1)
+	  if((maze[i][j].data & (1<<0)) == 1 && j>1)
 	    {
 	      int k;
 	      for(k=-5;k<=5;k++)
@@ -183,7 +188,7 @@ void write_file(const char *fname, cell_t **maze, int maze_w, int maze_h)
 		  img->data[i*10*4 + (img->w*10*4 + j*10*4) + 3 + k*4] = 255;
 		}
 	    }
-	  if(maze[i][j].data & (1<<1) == 1)
+	  if((maze[i][j].data & (1<<1)) == 1)
 	    {
 	      int k;
 	      for(k=-5;k<=5;k++)
@@ -196,7 +201,7 @@ void write_file(const char *fname, cell_t **maze, int maze_w, int maze_h)
 		}
 	      
 	    }
-	  if(maze[i][j].data & (1<<2) == 1)
+	  if((maze[i][j].data & (1<<2)) == 1)
 	    {
 	      int k;
 	      for(k=-5;k<=5;k++)
@@ -208,7 +213,7 @@ void write_file(const char *fname, cell_t **maze, int maze_w, int maze_h)
 		}
 	      
 	    }
-	  if(maze[i][j].data & (1<<3) == 1)
+	  if((maze[i][j].data & (1<<3)) == 1)
 	    {
 	      
 	    }
