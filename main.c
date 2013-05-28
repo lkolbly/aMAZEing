@@ -155,8 +155,8 @@ cell_t **generate_maze(int w, int h)
 void write_file(const char *fname, cell_t **maze, int maze_w, int maze_h)
 {
   image_t *img = malloc(sizeof(image_t));
-  img->w = maze_w*10;
-  img->h = maze_h*10;
+  img->w = maze_w*10+10;
+  img->h = maze_h*10+10;
   img->data = malloc(sizeof(char)*img->w*img->h*4);
 
 
@@ -171,7 +171,7 @@ void write_file(const char *fname, cell_t **maze, int maze_w, int maze_h)
   j=0;
   jMazeMax=maze_h;
 
-  for (i=0; i<iMazeMax*jMazeMax*400;i++)
+  for (i=0; i<iMazeMax*jMazeMax*440;i++)
     {
       img->data[i] = 255;
     }
@@ -205,16 +205,19 @@ void write_file(const char *fname, cell_t **maze, int maze_w, int maze_h)
 	    }
 	}
     }
-  
   imagePNGWriteToFile(fname,img);
 }
 
 void blacken( image_t *img, int x, int y)
 {
-  img->data[x*10*4 + y*10*img->w*4 + 0]=0;
-  img->data[x*10*4 + y*10*img->w*4 + 1]=0;
-  img->data[x*10*4 + y*10*img->w*4 + 2]=0;
-  img->data[x*10*4 + y*10*img->w*4 + 3]=255;
+  int k;
+  //for(k=-5; k<=5; k++)
+  // {
+  img->data[x*10*4 + y*10*(img->w)*4 + 0 + 40 + 40*img->w]=0;
+  img->data[x*10*4 + y*10*(img->w)*4 + 1 + 40 + 40*img->w]=0;
+  img->data[x*10*4 + y*10*(img->w)*4 + 2 + 40 + 40*img->w]=0;
+  img->data[x*10*4 + y*10*(img->w)*4 + 3 + 40 + 40*img->w]=255;
+  // }
 }
 
 int main(int argc, char **argv)
