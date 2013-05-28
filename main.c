@@ -183,11 +183,7 @@ void write_file(const char *fname, cell_t **maze, int maze_w, int maze_h)
 	{
 	  if((maze[i][j].data & (1<<0)) == 1) // && j>1)
 	    {
-	      int k;
-	      // for(k=-5;k<=5;k++)
-	      //	{
-	      blacken(img,i,j);
-		  //	}
+	      blackenUpper(img,i,j);
 	    }
 	  if((maze[i][j].data & (1<<1)) == 1)
 	    {
@@ -196,7 +192,7 @@ void write_file(const char *fname, cell_t **maze, int maze_w, int maze_h)
 	    }
 	  if((maze[i][j].data & (1<<2)) == 1)
 	    {
-	      // blacken(img,i,j);
+	      blackenLower(img,i,j);
 	      
 	    }
 	  if((maze[i][j].data & (1<<3)) == 1)
@@ -208,16 +204,28 @@ void write_file(const char *fname, cell_t **maze, int maze_w, int maze_h)
   imagePNGWriteToFile(fname,img);
 }
 
-void blacken( image_t *img, int x, int y)
+void blackenUpper( image_t *img, int x, int y)
 {
   int k;
-  //for(k=-5; k<=5; k++)
-  // {
-  img->data[x*10*4 + y*10*(img->w)*4 + 0 + 40 + 40*img->w]=0;
-  img->data[x*10*4 + y*10*(img->w)*4 + 1 + 40 + 40*img->w]=0;
-  img->data[x*10*4 + y*10*(img->w)*4 + 2 + 40 + 40*img->w]=0;
-  img->data[x*10*4 + y*10*(img->w)*4 + 3 + 40 + 40*img->w]=255;
-  // }
+  for(k=-5; k<=5; k++)
+    {
+      img->data[x*10*4 + y*10*(img->w)*4 + 0 + 40 + 40*img->w + 4*k + 20*img->w]=0;
+      img->data[x*10*4 + y*10*(img->w)*4 + 1 + 40 + 40*img->w + 4*k + 20*img->w]=0;
+      img->data[x*10*4 + y*10*(img->w)*4 + 2 + 40 + 40*img->w + 4*k + 20*img->w]=0;
+      img->data[x*10*4 + y*10*(img->w)*4 + 3 + 40 + 40*img->w + 4*k + 20*img->w]=255;
+    }
+}
+
+void blackenLower( image_t *img, int x, int y)
+{
+  int k;
+  for(k=-5; k<=5; k++)
+    {
+      img->data[x*10*4 + y*10*(img->w)*4 + 0 + 40 + 40*img->w + 4*k - 20*img->w]=0;
+      img->data[x*10*4 + y*10*(img->w)*4 + 1 + 40 + 40*img->w + 4*k - 20*img->w]=0;
+      img->data[x*10*4 + y*10*(img->w)*4 + 2 + 40 + 40*img->w + 4*k - 20*img->w]=0;
+      img->data[x*10*4 + y*10*(img->w)*4 + 3 + 40 + 40*img->w + 4*k - 20*img->w]=255;
+    }
 }
 
 int main(int argc, char **argv)
