@@ -173,24 +173,39 @@ void write_file(const char *fname, cell_t **maze, int maze_w, int maze_h)
 	{
 	  if(maze[i][j].data & (1<<0) == 1 && j>1)
 	    {
-	      int k;y
+	      int k;
 	      for(k=-5;k<=5;k++)
 		{
-		  printf("%i\n",i);
-		  printf("%i\n",j);
 		  printf("%i\n",i*10*4 + (img->w*10*4 * j*10*4) + 0 + k*4);
+		  img->data[i*10*4 + (img->w*10*4 + j*10*4) + 0 + k*4] = 255;
+		  img->data[i*10*4 + (img->w*10*4 + j*10*4) + 1 + k*4] = 255;
+		  img->data[i*10*4 + (img->w*10*4 + j*10*4) + 2 + k*4] = 255;
+		  img->data[i*10*4 + (img->w*10*4 + j*10*4) + 3 + k*4] = 255;
+		}
+	    }
+	  if(maze[i][j].data & (1<<1) == 1)
+	    {
+	      int k;
+	      for(k=-5;k<=5;k++)
+		{
+		  // printf("%i\n",i*10*4 + (img->w*10*4 * j*10*4) + 0 + k*4);
 		  img->data[i*10*4 + (img->w*10*4 * j*10*4) + 0 + k*4] = 255;
 		  img->data[i*10*4 + (img->w*10*4 * j*10*4) + 1 + k*4] = 255;
 		  img->data[i*10*4 + (img->w*10*4 * j*10*4) + 2 + k*4] = 255;
 		  img->data[i*10*4 + (img->w*10*4 * j*10*4) + 3 + k*4] = 255;
 		}
-	    }
-	  if(maze[i][j].data & (1<<1) == 1)
-	    {
 	      
 	    }
 	  if(maze[i][j].data & (1<<2) == 1)
 	    {
+	      int k;
+	      for(k=-5;k<=5;k++)
+		{
+		  img->data[i*10*4 + (img->w*10*4 - j*10*4) + 0 + k*4] = 255;
+		  img->data[i*10*4 + (img->w*10*4 - j*10*4) + 1 + k*4] = 255;
+		  img->data[i*10*4 + (img->w*10*4 - j*10*4) + 2 + k*4] = 255;
+		  img->data[i*10*4 + (img->w*10*4 - j*10*4) + 3 + k*4] = 255;
+		}
 	      
 	    }
 	  if(maze[i][j].data & (1<<3) == 1)
